@@ -1,0 +1,985 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KatastarX — Platform Ideas 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --buyer: #1a56db;
+    --buyer-light: #ebf0ff;
+    --buyer-mid: #3b82f6;
+    --seller: #c2410c;
+    --seller-light: #fff3ed;
+    --seller-mid: #f97316;
+    --growth: #166534;
+    --growth-light: #f0fdf4;
+    --growth-mid: #22c55e;
+    --done: #6b7280;
+    --done-light: #f3f4f6;
+    --bg: #f8f7f4;
+    --surface: #ffffff;
+    --border: #e5e4e0;
+    --text: #1a1917;
+    --muted: #6b6963;
+    --accent: #1a56db;
+  }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* SIDEBAR */
+  .layout { display: flex; min-height: 100vh; }
+
+  .sidebar {
+    width: 240px;
+    min-width: 240px;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    padding: 28px 0;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .logo {
+    padding: 0 24px 24px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 20px;
+  }
+
+  .logo-title {
+    font-size: 17px;
+    font-weight: 600;
+    letter-spacing: -0.3px;
+    color: var(--text);
+  }
+
+  .logo-sub {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 2px;
+    font-family: 'DM Mono', monospace;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .nav-section {
+    padding: 0 12px;
+    margin-bottom: 8px;
+  }
+
+  .nav-label {
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--muted);
+    padding: 0 12px;
+    margin-bottom: 6px;
+    margin-top: 16px;
+  }
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 13.5px;
+    font-weight: 400;
+    color: var(--muted);
+    transition: all 0.15s;
+    text-decoration: none;
+    border: none;
+    background: none;
+    width: 100%;
+    text-align: left;
+  }
+
+  .nav-item:hover { background: var(--bg); color: var(--text); }
+
+  .nav-item.active {
+    background: var(--buyer-light);
+    color: var(--buyer);
+    font-weight: 500;
+  }
+
+  .nav-item.active.seller { background: var(--seller-light); color: var(--seller); }
+  .nav-item.active.growth { background: var(--growth-light); color: var(--growth); }
+  .nav-item.active.all { background: #f5f3ff; color: #4f46e5; }
+
+  .dot {
+    width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+  }
+  .dot.buyer { background: var(--buyer); }
+  .dot.seller { background: var(--seller); }
+  .dot.growth { background: var(--growth); }
+  .dot.all { background: #6366f1; }
+
+  .nav-count {
+    margin-left: auto;
+    font-size: 11px;
+    font-family: 'DM Mono', monospace;
+    background: var(--bg);
+    padding: 1px 7px;
+    border-radius: 20px;
+    color: var(--muted);
+  }
+
+  /* FILTER PILLS in sidebar */
+  .filter-section { padding: 0 16px; }
+  .filter-title {
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--muted);
+    margin-bottom: 8px;
+    margin-top: 20px;
+  }
+
+  .pills { display: flex; flex-wrap: wrap; gap: 6px; }
+
+  .pill {
+    font-size: 11px;
+    font-family: 'DM Mono', monospace;
+    padding: 4px 10px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    cursor: pointer;
+    background: var(--surface);
+    color: var(--muted);
+    transition: all 0.15s;
+    font-weight: 500;
+  }
+
+  .pill:hover { border-color: #aaa; color: var(--text); }
+  .pill.active-mvp { background: #1a56db; border-color: #1a56db; color: white; }
+  .pill.active-phase2 { background: #166534; border-color: #166534; color: white; }
+  .pill.active-phase3 { background: #6b21a8; border-color: #6b21a8; color: white; }
+  .pill.active-done { background: #374151; border-color: #374151; color: white; }
+
+  /* MAIN CONTENT */
+  .main {
+    flex: 1;
+    padding: 40px 48px;
+    max-width: 900px;
+  }
+
+  .page-header {
+    margin-bottom: 40px;
+    padding-bottom: 28px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .page-kicker {
+    font-size: 11px;
+    font-family: 'DM Mono', monospace;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--muted);
+    margin-bottom: 10px;
+  }
+
+  .page-title {
+    font-size: 30px;
+    font-weight: 600;
+    letter-spacing: -0.8px;
+    line-height: 1.15;
+    color: var(--text);
+    margin-bottom: 10px;
+  }
+
+  .page-desc {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.6;
+    max-width: 560px;
+  }
+
+  .stats-row {
+    display: flex;
+    gap: 20px;
+    margin-top: 20px;
+  }
+
+  .stat-chip {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: var(--muted);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 6px 14px;
+    border-radius: 20px;
+  }
+
+  .stat-num { font-weight: 600; color: var(--text); font-family: 'DM Mono', monospace; }
+
+  /* SECTION HEADERS */
+  .section-block { margin-bottom: 48px; }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 20px;
+    padding-bottom: 14px;
+    border-bottom: 2px solid var(--border);
+  }
+
+  .section-icon {
+    width: 36px; height: 36px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .icon-buyer { background: var(--buyer-light); color: var(--buyer); }
+  .icon-seller { background: var(--seller-light); color: var(--seller); }
+  .icon-growth { background: var(--growth-light); color: var(--growth); }
+
+  .section-title {
+    font-size: 19px;
+    font-weight: 600;
+    letter-spacing: -0.3px;
+  }
+
+  .section-desc {
+    font-size: 13px;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+
+  .section-count {
+    margin-left: auto;
+    font-size: 12px;
+    font-family: 'DM Mono', monospace;
+    color: var(--muted);
+    background: var(--bg);
+    padding: 3px 10px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+  }
+
+  /* IDEA CARDS */
+  .ideas-grid { display: flex; flex-direction: column; gap: 12px; }
+
+  .idea-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px 20px;
+    transition: box-shadow 0.15s, border-color 0.15s;
+    cursor: default;
+  }
+
+  .idea-card:hover {
+    border-color: #ccc;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  }
+
+  .idea-card.hidden { display: none; }
+
+  .card-top {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 8px;
+  }
+
+  .idea-title {
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: -0.2px;
+    flex: 1;
+    line-height: 1.3;
+  }
+
+  .priority-badge {
+    font-size: 10px;
+    font-family: 'DM Mono', monospace;
+    font-weight: 500;
+    padding: 3px 8px;
+    border-radius: 5px;
+    white-space: nowrap;
+    flex-shrink: 0;
+    letter-spacing: 0.3px;
+  }
+
+  .badge-mvp { background: #dbeafe; color: #1d4ed8; }
+  .badge-phase2 { background: #dcfce7; color: #15803d; }
+  .badge-phase3 { background: #f3e8ff; color: #7e22ce; }
+  .badge-done { background: var(--done-light); color: var(--done); }
+
+  .idea-body {
+    font-size: 13.5px;
+    line-height: 1.65;
+    color: #3d3b37;
+    margin-bottom: 10px;
+  }
+
+  .idea-note {
+    font-size: 12px;
+    color: var(--muted);
+    background: #fafaf8;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 8px 12px;
+    line-height: 1.5;
+    margin-top: 8px;
+  }
+
+  .idea-note strong {
+    color: var(--text);
+    font-weight: 500;
+  }
+
+  .card-tags {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-top: 10px;
+  }
+
+  .tag {
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-weight: 500;
+    border: 1px solid;
+  }
+
+  .tag-buyer { background: var(--buyer-light); color: var(--buyer); border-color: #bfdbfe; }
+  .tag-seller { background: var(--seller-light); color: var(--seller); border-color: #fed7aa; }
+  .tag-growth { background: var(--growth-light); color: var(--growth); border-color: #bbf7d0; }
+  .tag-neutral { background: var(--bg); color: var(--muted); border-color: var(--border); }
+
+  /* OPEN QUESTIONS */
+  .questions-block {
+    background: #fffbeb;
+    border: 1px solid #fde68a;
+    border-radius: 12px;
+    padding: 24px;
+    margin-top: 8px;
+  }
+
+  .questions-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #92400e;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .q-list { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+
+  .q-item {
+    font-size: 13px;
+    color: #78350f;
+    line-height: 1.55;
+    padding-left: 18px;
+    position: relative;
+  }
+
+  .q-item::before {
+    content: "?";
+    position: absolute;
+    left: 0;
+    font-weight: 700;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    top: 1px;
+  }
+
+  /* EMPTY STATE */
+  .empty {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--muted);
+    font-size: 14px;
+    display: none;
+  }
+
+  /* SEARCH */
+  .search-wrap { padding: 0 16px; margin-bottom: 4px; }
+  .search-input {
+    width: 100%;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    padding: 7px 12px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--bg);
+    color: var(--text);
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  .search-input:focus { border-color: #999; background: var(--surface); }
+  .search-input::placeholder { color: var(--muted); }
+
+  @media (max-width: 768px) {
+    .sidebar { display: none; }
+    .main { padding: 24px 20px; }
+  }
+</style>
+</head>
+<body>
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="logo">
+      <div class="logo-title">KatastarX</div>
+      <div class="logo-sub">Platform Ideas 2026</div>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-label">Sections</div>
+      <button class="nav-item active all" onclick="filterSection('all', this)">
+        <span class="dot all"></span> All ideas
+        <span class="nav-count" id="count-all">21</span>
+      </button>
+      <button class="nav-item" onclick="filterSection('buyer', this)">
+        <span class="dot buyer"></span> Helping Buyers
+        <span class="nav-count" id="count-buyer">12</span>
+      </button>
+      <button class="nav-item seller" onclick="filterSection('seller', this)" style="--active-bg: var(--seller-light); --active-color: var(--seller)">
+        <span class="dot seller"></span> Helping Sellers
+        <span class="nav-count" id="count-seller">6</span>
+      </button>
+      <button class="nav-item" onclick="filterSection('growth', this)">
+        <span class="dot growth"></span> Boosting KatastarX
+        <span class="nav-count" id="count-growth">8</span>
+      </button>
+    </div>
+
+    <div class="filter-section">
+      <div class="filter-title">Filter by priority</div>
+      <div class="pills">
+        <span class="pill" onclick="togglePriority('MVP', this)">MVP</span>
+        <span class="pill" onclick="togglePriority('Phase 2', this)">Phase 2</span>
+        <span class="pill" onclick="togglePriority('Phase 3', this)">Phase 3</span>
+        <span class="pill" onclick="togglePriority('Done', this)">Done</span>
+      </div>
+    </div>
+
+    <div class="search-wrap" style="margin-top: 20px;">
+      <div class="filter-title" style="margin-bottom: 8px;">Search</div>
+      <input class="search-input" type="text" placeholder="Find an idea..." oninput="doSearch(this.value)" />
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <div class="page-header">
+      <div class="page-kicker">Internal document &middot; Faruk Salkic &middot; March 2026</div>
+      <h1 class="page-title">Platform Ideas 2026</h1>
+      <p class="page-desc">Feature suggestions grouped by who they help most. Use the sidebar to filter by section or priority. Each approved idea should become its own ticket in the backlog.</p>
+      <div class="stats-row">
+        <div class="stat-chip"><span class="stat-num">21</span> total ideas</div>
+        <div class="stat-chip"><span class="stat-num">11</span> MVP</div>
+        <div class="stat-chip"><span class="stat-num">8</span> Phase 2</div>
+        <div class="stat-chip"><span class="stat-num">1</span> Phase 3</div>
+        <div class="stat-chip"><span class="stat-num">1</span> Done</div>
+      </div>
+    </div>
+
+    <!-- SECTION: BUYERS -->
+    <div class="section-block" id="section-buyer">
+      <div class="section-header">
+        <div class="section-icon icon-buyer">01</div>
+        <div>
+          <div class="section-title" style="color: var(--buyer)">Helping Buyers</div>
+          <div class="section-desc">Features that make buying and renting better, faster and safer.</div>
+        </div>
+        <div class="section-count">12 ideas</div>
+      </div>
+      <div class="ideas-grid" id="grid-buyer">
+
+        <div class="idea-card" data-section="buyer" data-priority="MVP">
+          <div class="card-top">
+            <div class="idea-title">Verified Badge</div>
+            <span class="priority-badge badge-mvp">MVP</span>
+          </div>
+          <p class="idea-body">Njuškalo is full of fake listings and everyone knows it. If someone sees a KatastarX Verified badge they immediately trust the listing more. We manually check the title deed against the OIB and put the badge on. Not complicated but the effect is huge.</p>
+          <div class="idea-note"><strong>Note:</strong> Verified listings could require a paid monthly subscription to maintain badge status.</div>
+          <div class="card-tags">
+            <span class="tag tag-buyer">Buyers</span>
+            <span class="tag tag-neutral">Trust</span>
+          </div>
+        </div>
+
+        <div class="idea-card" data-section="buyer" data-priority="MVP">
+          <div class="card-top">
+            <div class="idea-title">Aktivna Plomba Warning Tag</div>
+            <span class="priority-badge badge-mvp">MVP</span>
+          </div>
+          <p class="idea-body">Buyers are constantly scared about hidden legal disputes and nobody explains anything. We let the seller tick a checkbox when listing and show a visible warning tag on the property. Total transparency. People will trust us for this.</p>
+          <div class="idea-note"><strong>Note:</strong> Depends on how far we get with e-Gradjani / e-Vizitori integration. Even as a manual checkbox it adds real value.</div>
+          <div class="card-tags">
+            <span class="tag tag-buyer">Buyers</span>
+            <span class="tag tag-neutral">Croatian specific</span>
+            <span class="tag tag-neutral">Trust</span>
+          </div>
+        </div>
+
+        <div class="idea-card" data-section="buyer" data-priority="MVP">
+          <div class="card-top">
+            <div class="idea-title">Price Drop Alert</div>
+            <span class="priority-badge badge-mvp">MVP</span>
+          </div>
+          <p class="idea-body">People check their phones immediately when they get this notification. You saved a property two months ago and suddenly you get a message that the price dropped 15.000 EUR. You open the app right away. One of the strongest features to bring people back without spending anything on marketing.</p>
+          <div class="idea-note"><strong>Note:</strong> Need to check if our current alerts and favorites already handle this or if it needs to be built separately.</div>
+          <div class="card-tags">
+            <span class="tag tag-buyer">Buyers</span>
+            <span class="tag tag-neutral">Retention</span>
+          </div>
+        </div>
+
+        <div class="idea-card" data-section="buyer" data-priority="Phase 2">
+          <div class="card-top">
+            <div class="idea-title">Polygon Map Search</div>
+            <span class="priority-badge badge-phase2">Phase 2</span>
+          </div>
+          <p class="idea-body">On Njuškalo you draw a circle on the map, that is basically it. We let people draw any shape they want. If you only want to live between two specific streets in Zagreb you can do that. Sounds small but people who know exactly where they want to live go crazy for this.</p>
+          <div class="idea-note"><strong>Note:</strong> Might be expensive to implement. Worth researching the cost before committing.</div>
+          <div class="card-tags">
+            <span class="tag tag-buyer">Buyers</span>
+            <span class="tag tag-neutral">Search</span>
+          </div>
+        </div>
+
+        <div class="idea-card" data-section="buyer" data-priority="MVP">
+          <div class="card-top">
+            <div class="idea-title">Smart Exclude Filters</div>
+            <span class="priority-badge badge-mvp">MVP</span>
+          </div>
+          <p class="idea-body">Right now on Croatian portals you can filter what you want but you cannot filter what you do not want. Let people say no basement apartments, no first floor, no properties with active legal issues. One extra filter option but it saves serious buyers a lot of time.</p>
+          <div class="card-tags">
+            <span class="tag tag-buyer">Buyers</span>
+            <span class="tag tag-neutral">Search</span>
+          </div>
+        </div>
+
+        <div class="idea-card" data-section="buyer" data-priority="Phase 2">
+          <div class="card-top">
+            <div class="idea-title">Price History Timeline</div>
+            <span class="priority-badge badge-phase2">Phase 2</span>
+          </div>
+          <p class="idea-body">Show when the listing first appeared, what the price was, and every drop since then. Agents in Croatia hide this to protect sellers but buyers want it badly. We show it. Buyers trust us. Agents might be annoyed but their clients still find us because buyers go where the data is.</p>
+          <div class="idea-note"><strong>Note:</strong> Two-edged sword. Good for buyers, might slow some agent partnerships early on. Worth a team discussion.</div>
+          <div class="card-tags">
+            <span class="tag tag-buyer">Buyers</span>
+            <span class="tag tag-neutral">Transparency</span>
+          </div>
+        </div>
+
+        <div class="idea-card" data-section="buyer" data-priority="MVP">
+          <div class="card-top">
+            <div class="idea-title">Currency Toggle</div>
+            <span class="priority-badge badge-mvp">MVP</span>
+          </div>
+          <p class="idea-body">One button to switch between EUR, GBP, CHF, USD with live rates. Foreign buyers do not want to open a calculator every time they see a price. The ones buying on the coast often have Swiss or German bank accounts. This removes friction immediately.</p>
+          <div class="card-tags">
+            <span class="tag tag-buyer">Buyers</span>
+            <span class="tag tag-neutral">International</span>
+          </div>
+        </div>
+
+        <div class="idea-card" data-section="buyer" data-priority="Phase 2">
+          <div class="card-top">
+            <div class="idea-title">Collaborative Wishlist</div>
+            <span class="priority-badge badge-phase2">Phase 2</span>
+          </div>
+          <p class="idea-body">Couples buy apartments together. Let them invite each other to a shared saved list where both can rate and comment on properties. The side effect is that the second person now also creates a KatastarX account. Basically free user acquisition built into the product.</p>
+          <div class="card-tags">
+            <span class="tag tag-buyer">Buyers</span>
+            <span class="tag tag-growth">Growth</span>
+            <span class="tag tag-neutral">Acquisition</span>
+          </div>
+        </div>
+
+        <div class="idea-card" data-section="buyer" data-priority="MVP">
+          <div class="card-top">
+            <div class="idea-title">Foreign Buyer Guide Page</div>
+            <span class="priority-badge badge-mvp">MVP</span>
+          </div>
+          <p class="idea-body">One content page explaining OIB, reciprocity laws, what a Javni Biljeznik is, typical taxes. Foreigners are completely lost with Croatian bureaucracy and nobody is helping them. We make this page and every foreign buyer searching how to buy property in Croatia finds us first on Google.</p>
+          <div class="card-tags">
+            <span class="tag tag-buyer">Buyers</span>
+            <span class="tag tag-neutral">SEO</span>
+            <span class="tag tag-neutral">International</span>
+          </div>
+        </div>
+
+        <div class="idea-card" data-section="buyer" data-priority="Phase 2">
+          <div class="card-top">
+            <div class="idea-title">Tourist ROI Calculator</div>
+            <span class="priority-badge badge-phase2">Phase 2</span>
+          </div>
+          <p class="idea-body">Most coastal apartments are bought as Airbnb rentals, everyone knows this. We put a simple calculator on each listing. Enter purchase price, see estimated seasonal rental income. People will spend 30 minutes playing with this. Perfect for diaspora and foreign investors who do not know the Croatian market.</p>
+          <div class="idea-note"><strong>Note:</strong> Similar tools exist on California platforms. Could roll out when coastal listings are solid.</div>
+          <div class="card-tags">
+            <span class="tag tag-buyer">Buyers</span>
+            <span class="tag tag-neutral">Investors</span>
+            <span class="tag tag-neutral">Engagement</span>
+          </div>
+        </div>
+
+        <div class="idea-card" data-section="buyer" data-priority="Phase 3">
+          <div class="card-top">
+            <div class="idea-title">KatastarX Estimate (Price Tool)</div>
+            <span class="priority-badge badge-phase3">Phase 3</span>
+          </div>
+          <p class="idea-body">Like Zillow's Zestimate. Show an estimated market value for every property based on comparable listings nearby. Homeowners will check this constantly even when they are not selling. Turns us from a listings portal into something people visit every month just to see what their apartment is worth.</p>
+          <div class="idea-note"><strong>Note:</strong> Reference zillow.com/zestimate — worth studying how they present it. Needs solid data first.</div>
+          <div class="card-tags">
+            <span class="tag tag-buyer">Buyers</span>
+            <span class="tag tag-neutral">Retention</span>
+            <span class="tag tag-neutral">Data</span>
+          </div>
+        </div>
+
+        <div class="idea-card" data-section="buyer" data-priority="MVP">
+          <div class="card-top">
+            <div class="idea-title">Document Template Library</div>
+            <span class="priority-badge badge-mvp">MVP</span>
+          </div>
+          <p class="idea-body">A few downloadable Word and PDF templates for standard Croatian real estate. Pre-contract for reservation deposit (Kapara), checklist for Notary appointment. Static files, zero maintenance. People will bookmark the site just for these.</p>
+          <div class="card-tags">
+            <span class="tag tag-buyer">Buyers</span>
+            <span class="tag tag-seller">Sellers</span>
+            <span class="tag tag-neutral">Utility</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- SECTION: SELLERS -->
+    <div class="section-block" id="section-seller">
+      <div class="section-header">
+        <div class="section-icon icon-seller">02</div>
+        <div>
+          <div class="section-title" style="color: var(--seller)">Helping Sellers</div>
+          <div class="section-desc">Features that help private sellers and agencies list better and understand performance.</div>
+        </div>
+        <div class="section-count">6 ideas</div>
+      </div>
+      <div class="ideas-grid" id="grid-seller">
+
+        <div class="idea-card" data-section="seller" data-priority="MVP">
+          <div class="card-top">
+            <div class="idea-title">Seller Weekly Stats Email</div>
+            <span class="priority-badge badge-mvp">MVP</span>
+          </div>
+          <p class="idea-body">A basic automated email every Monday. Your listing got 47 views this week and 3 people saved it. That is it. Sellers feel the platform is working for them. And if numbers are low they will buy a Boost to improve visibility. Costs nothing to build, helps sell the subscription.</p>
+          <div class="card-tags">
+            <span class="tag tag-seller">Sellers</span>
+            <span class="tag tag-neutral">Retention</span>
+            <span class="tag tag-neutral">Revenue</span>
+          </div>
+        </div>
+
+        <div class="idea-card" data-section="seller" data-priority="MVP">
+          <div class="card-top">
+            <div class="idea-title">Listing Quality Score</div>
+            <span class="priority-badge badge-mvp">MVP</span>
+          </div>
+          <p class="idea-body">Give every listing a score out of 100. More photos, add floor plan, fill in all details, score goes up. Low score listings look worse next to high score ones so sellers fix them on their own. The whole platform ends up looking better than any competitor, basically for free.</p>
+          <div class="idea-note"><strong>Note:</strong> Could also add a filter for buyers to only show listings above a certain score threshold.</div>
+          <div class="card-tags">
+            <span class="tag tag-seller">Sellers</span>
+            <span class="tag tag-neutral">Platform Quality</span>
+          </div>
+        </div>
+
+        <div class="idea-card" data-section="seller" data-priority="MVP">
+          <div class="card-top">
+            <div class="idea-title">Developer Project Pages</div>
+            <span class="priority-badge badge-mvp">MVP</span>
+          </div>
+          <p class="idea-body">Dedicated premium pages for new construction projects. Floor plans, availability table, construction timeline, pre-sale interest form. Developers need early reservations to get bank financing and they will pay well for a page that generates those leads. One of our highest revenue plays. Mirza also mentioned this before.</p>
+          <div class="card-tags">
+            <span class="tag tag-seller">Sellers</span>
+            <span class="tag tag-growth">Growth</span>
+            <span class="tag tag-neutral">Revenue</span>
+          </div>
+        </div>
+
+        <div class="idea-card" data-section="seller" data-priority="Phase 2">
+          <div class="card-top">
+            <div class="idea-title">Construction Progress Tracker</div>
+            <span class="priority-badge badge-phase2">Phase 2</span>
+          </div>
+          <p class="idea-body">For people who bought off-plan. They log in and see Foundation done, walls Q3, keys expected Q1 2027. Developer updates it themselves. It keeps pre-sale buyers coming back to the platform every month which is exactly what we want.</p>
+          <div class="card-tags">
+            <span class="tag tag-seller">Sellers</span>
+            <span class="tag tag-buyer">Buyers</span>
+            <span class="tag tag-neutral">Retention</span>
+          </div>
+        </div>
+
+        <div class="idea-card" data-section="seller" data-priority="Phase 2">
+          <div class="card-top">
+            <div class="idea-title">Agent Profile Pages</div>
+            <span class="priority-badge badge-phase2">Phase 2</span>
+          </div>
+          <p class="idea-body">Each agent gets their own SEO-optimized page with active listings, sold history, response time and client reviews. We can sell paid badges like Top Responder, Verified Pro, 10+ years experience. Sellers searching for an agent on Google find them and land on KatastarX, which means more traffic for us too.</p>
+          <div class="idea-note"><strong>Note:</strong> Once an agent has a strong profile page on KatastarX, it often ranks better than their own website. That creates lock-in over time.</div>
+          <div class="card-tags">
+            <span class="tag tag-seller">Sellers</span>
+            <span class="tag tag-growth">Growth</span>
+            <span class="tag tag-neutral">SEO</span>
+          </div>
+        </div>
+
+        <div class="idea-card" data-section="seller" data-priority="Phase 2">
+          <div class="card-top">
+            <div class="idea-title">Instagram Ready Export for Agents</div>
+            <span class="priority-badge badge-phase2">Phase 2</span>
+          </div>
+          <p class="idea-body">One click and the agent gets a nice square image of the listing with key stats and our logo, ready to post on Instagram or Facebook. Agents post it, their followers see KatastarX, we get free brand exposure. We become part of their daily workflow and they have a real reason to stay subscribed.</p>
+          <div class="card-tags">
+            <span class="tag tag-seller">Sellers</span>
+            <span class="tag tag-growth">Growth</span>
+            <span class="tag tag-neutral">Exposure</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- SECTION: GROWTH -->
+    <div class="section-block" id="section-growth">
+      <div class="section-header">
+        <div class="section-icon icon-growth">03</div>
+        <div>
+          <div class="section-title" style="color: var(--growth)">Boosting KatastarX</div>
+          <div class="section-desc">Features that grow the platform, drive traffic, increase revenue or build long-term advantage.</div>
+        </div>
+        <div class="section-count">8 ideas</div>
+      </div>
+      <div class="ideas-grid" id="grid-growth">
+
+        <div class="idea-card" data-section="growth" data-priority="MVP">
+          <div class="card-top">
+            <div class="idea-title">EN/DE Language Toggle</div>
+            <span class="priority-badge badge-mvp">MVP</span>
+          </div>
+          <p class="idea-body">Around 30 percent of coastal buyers are Germans, Austrians, or diaspora from Germany. None of our competitors care about them. Njuškalo translation is a joke. When we start promoting this should be a key message — we are the only Croatian real estate platform that actually works well in English and German.</p>
+          <div class="card-tags">
+            <span class="tag tag-growth">Growth</span>
+            <span class="tag tag-neutral">International</span>
+            <span class="tag tag-neutral">SEO</span>
+          </div>
+        </div>
+
+        <div class="idea-card" data-section="growth" data-priority="MVP">
+          <div class="card-top">
+            <div class="idea-title">WhatsApp Contact Button</div>
+            <span class="priority-badge badge-mvp">MVP</span>
+          </div>
+          <p class="idea-body">A WhatsApp link directly on every listing. One tap and the buyer is talking to the agent. Croatians use WhatsApp for everything including business. Agents will love us because they actually get responses instead of waiting for people to fill in contact forms.</p>
+          <div class="idea-note"><strong>Note:</strong> Need to check cost of integration, whether it affects platform security and if it needs any special setup.</div>
+          <div class="card-tags">
+            <span class="tag tag-growth">Growth</span>
+            <span class="tag tag-neutral">Conversion</span>
+          </div>
+        </div>
+
+        <div class="idea-card" data-section="growth" data-priority="Done">
+          <div class="card-top">
+            <div class="idea-title">XML/API Bulk Upload for Agencies</div>
+            <span class="priority-badge badge-done">Done</span>
+          </div>
+          <p class="idea-body">Already implemented. Big agencies have hundreds of listings and are not entering them one by one manually. This was a must for onboarding serious agencies from day one.</p>
+          <div class="card-tags">
+            <span class="tag tag-growth">Growth</span>
+            <span class="tag tag-neutral">Agency Onboarding</span>
+          </div>
+        </div>
+
+        <div class="idea-card" data-section="growth" data-priority="MVP">
+          <div class="card-top">
+            <div class="idea-title">"14 People Saved This" Counter</div>
+            <span class="priority-badge badge-mvp">MVP</span>
+          </div>
+          <p class="idea-body">A small social proof counter on hot listings. Completely honest, just pulls from the database. Buyers see this and feel urgency. Agents love it because it makes their listings look desirable. Takes maybe a day to build.</p>
+          <div class="idea-note"><strong>Note:</strong> Need to make sure the numbers cannot be gamed or faked.</div>
+          <div class="card-tags">
+            <span class="tag tag-growth">Growth</span>
+            <span class="tag tag-neutral">Conversion</span>
+            <span class="tag tag-neutral">Trust</span>
+          </div>
+        </div>
+
+        <div class="idea-card" data-section="growth" data-priority="Phase 2">
+          <div class="card-top">
+            <div class="idea-title">Desktop PWA Install</div>
+            <span class="priority-badge badge-phase2">Phase 2</span>
+          </div>
+          <p class="idea-body">We already have a mobile app. This is specifically for agents on desktop. They sit at their computer all day. If KatastarX is installed as a desktop app they open it like email every morning. It becomes a habit. No App Store, no separate development, comes from the web build automatically. Works on Chrome and Edge which covers most Croatian agency computers.</p>
+          <div class="card-tags">
+            <span class="tag tag-growth">Growth</span>
+            <span class="tag tag-neutral">Agent Retention</span>
+            <span class="tag tag-neutral">Habit</span>
+          </div>
+        </div>
+
+        <div class="idea-card" data-section="growth" data-priority="MVP">
+          <div class="card-top">
+            <div class="idea-title">Dynamic City & Region Landing Pages</div>
+            <span class="priority-badge badge-mvp">MVP</span>
+          </div>
+          <p class="idea-body">Auto-generated pages for every city and region. Stanovi prodaja Split, Najam Zagreb Tresnjevka, Kuce Istra. These pages rank on Google and bring in free traffic from people who are just starting their search. Reduces our cost of acquiring users over time.</p>
+          <div class="card-tags">
+            <span class="tag tag-growth">Growth</span>
+            <span class="tag tag-neutral">SEO</span>
+            <span class="tag tag-neutral">Traffic</span>
+          </div>
+        </div>
+
+        <div class="idea-card" data-section="growth" data-priority="MVP">
+          <div class="card-top">
+            <div class="idea-title">Real Estate Schema Markup</div>
+            <span class="priority-badge badge-mvp">MVP</span>
+          </div>
+          <p class="idea-body">Technical SEO so our listings show up as rich snippets in Google search results with price and photo visible directly in the search page. Increases click-through rates without spending more on ads.</p>
+          <div class="card-tags">
+            <span class="tag tag-growth">Growth</span>
+            <span class="tag tag-neutral">SEO</span>
+            <span class="tag tag-neutral">Technical</span>
+          </div>
+        </div>
+
+        <div class="idea-card" data-section="growth" data-priority="MVP">
+          <div class="card-top">
+            <div class="idea-title">Modular Localization Architecture</div>
+            <span class="priority-badge badge-mvp">MVP</span>
+          </div>
+          <p class="idea-body">The codebase should be structured so that legal terms, currencies, measurements and language can be swapped per country easily. Not a feature users see but prevents massive technical debt when we expand to Slovenia, Serbia or beyond. Build it right now for almost no cost. Ignore it and expanding later costs a lot.</p>
+          <div class="card-tags">
+            <span class="tag tag-growth">Growth</span>
+            <span class="tag tag-neutral">Franchise</span>
+            <span class="tag tag-neutral">Architecture</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- OPEN QUESTIONS -->
+    <div class="section-block" id="section-questions">
+      <div class="section-header">
+        <div class="section-icon" style="background: #fffbeb; color: #92400e;">?</div>
+        <div>
+          <div class="section-title" style="color: #92400e">Open Questions for the Team</div>
+          <div class="section-desc">Things that need a decision before we can move forward on certain ideas.</div>
+        </div>
+      </div>
+      <div class="questions-block">
+        <ul class="q-list">
+          <li class="q-item">WhatsApp integration: cost, security implications, does it hurt the in-platform messaging experience?</li>
+          <li class="q-item">Price History Timeline: good for buyers but may slow early agent partnerships. How do we handle this?</li>
+          <li class="q-item">Polygon Map Search: is this expensive to build? What is the estimate?</li>
+          <li class="q-item">Aktivna Plomba: how far are we with e-Gradjani / e-Vizitori integration? Can we do a manual checkbox for now?</li>
+          <li class="q-item">Does our existing alerts and favorites system already support price drop notifications or does it need to be built from scratch?</li>
+          <li class="q-item">Developer Project Pages: what is the pricing model? Flat fee per project or monthly subscription?</li>
+        </ul>
+      </div>
+    </div>
+
+    <div id="empty" class="empty">No ideas match your current filter.</div>
+
+  </main>
+</div>
+
+<script>
+  let activeSection = 'all';
+  let activePriorities = new Set();
+  let searchQuery = '';
+
+  function filterSection(section, btn) {
+    activeSection = section;
+    document.querySelectorAll('.nav-item').forEach(b => {
+      b.classList.remove('active');
+      if (b.classList.contains('seller')) b.classList.remove('active');
+      if (b.classList.contains('growth')) b.classList.remove('active');
+    });
+    btn.classList.add('active');
+    if (section === 'seller') btn.classList.add('seller');
+    if (section === 'growth') btn.classList.add('growth');
+    if (section === 'all') btn.classList.add('all');
+    applyFilters();
+  }
+
+  function togglePriority(p, el) {
+    const key = 'active-' + p.toLowerCase().replace(' ', '');
+    if (activePriorities.has(p)) {
+      activePriorities.delete(p);
+      el.classList.remove(key);
+    } else {
+      activePriorities.add(p);
+      el.classList.add(key);
+    }
+    applyFilters();
+  }
+
+  function doSearch(val) {
+    searchQuery = val.toLowerCase();
+    applyFilters();
+  }
+
+  function applyFilters() {
+    const sections = ['buyer', 'seller', 'growth'];
+
+    sections.forEach(sec => {
+      const block = document.getElementById('section-' + sec);
+      if (activeSection !== 'all' && activeSection !== sec) {
+        block.style.display = 'none';
+        return;
+      }
+      block.style.display = '';
+
+      const cards = block.querySelectorAll('.idea-card');
+      let visible = 0;
+      cards.forEach(card => {
+        const priority = card.dataset.priority;
+        const text = card.innerText.toLowerCase();
+        const priorityOk = activePriorities.size === 0 || activePriorities.has(priority);
+        const searchOk = searchQuery === '' || text.includes(searchQuery);
+        if (priorityOk && searchOk) {
+          card.classList.remove('hidden');
+          visible++;
+        } else {
+          card.classList.add('hidden');
+        }
+      });
+    });
+
+    const qBlock = document.getElementById('section-questions');
+    qBlock.style.display = (activeSection === 'all' || activeSection === 'questions') ? '' : 'none';
+  }
+</script>
+</body>
+</html>
